@@ -10,7 +10,7 @@ A Jellyfin plugin that allows administrators to feature a "Movie of the Week" on
 
 ## Installation
 1. In Jellyfin, go to Dashboard -> Plugins -> Repositories
-2. Add this repository: `https://github.com/YOUR_USERNAME/jellyfin-plugin-movieoftheweek`
+2. Add this repository: `https://github.com/oliverdougherC/MovieOfTheWeek`
 3. Go to Catalog
 4. Find "Movie of the Week" and install it
 5. Restart Jellyfin
