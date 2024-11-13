@@ -1,0 +1,14 @@
+---
+name: "MovieOfTheWeek"
+guid: "e29b0e36-d7c3-4068-9b12-3f87f3dcf947"
+version: "1.0.0"
+targetAbi: "10.8.0.0"
+framework: "net6.0"
+overview: "Displays a featured movie on the home screen"
+description: "Allows administrators to set a featured movie that will be displayed prominently on the home screen"
+category: "General"
+owner: "YourName"
+artifacts:
+  - "MovieOfTheWeek.dll"
+changelog: |
+  Initial release 

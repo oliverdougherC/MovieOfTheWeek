@@ -1,0 +1,92 @@
+<div data-role="page" class="page type-interior pluginConfigurationPage movieOfTheWeekConfigPage">
+    <div data-role="content">
+        <div class="content-primary">
+            <form class="movieOfTheWeekConfigForm">
+                <div class="inputContainer">
+                    <label for="movieSelect">Select Movie:</label>
+                    <select id="movieSelect" is="emby-select"></select>
+                </div>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" id="enableGlow" />
+                        <span>Enable Glow Effect</span>
+                    </label>
+                    <div class="fieldDescription">
+                        Adds a subtle glow effect to the featured movie.
+                    </div>
+                </div>
+
+                <button is="emby-button" type="submit" class="raised button-submit block">
+                    <span>Save</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var MovieOfTheWeekConfig = {
+            pluginUniqueId: 'e29b0e36-d7c3-4068-9b12-3f87f3dcf947',
+
+            loadConfiguration: function() {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(MovieOfTheWeekConfig.pluginUniqueId).then(function (config) {
+                    document.querySelector('#movieSelect').value = config.SelectedMovieId || '';
+                    document.querySelector('#enableGlow').checked = config.EnableGlowEffect;
+                    Dashboard.hideLoadingMsg();
+                });
+            },
+
+            saveConfiguration: function(e) {
+                e.preventDefault();
+                Dashboard.showLoadingMsg();
+
+                ApiClient.getPluginConfiguration(MovieOfTheWeekConfig.pluginUniqueId).then(function (config) {
+                    config.SelectedMovieId = document.querySelector('#movieSelect').value;
+                    config.EnableGlowEffect = document.querySelector('#enableGlow').checked;
+
+                    ApiClient.updatePluginConfiguration(MovieOfTheWeekConfig.pluginUniqueId, config).then(function (result) {
+                        Dashboard.processPluginConfigurationUpdateResult(result);
+                    });
+                });
+            },
+
+            populateMovies: function() {
+                ApiClient.getItems(Dashboard.getCurrentUserId(), {
+                    IncludeItemTypes: "Movie",
+                    Recursive: true,
+                    Fields: "Name"
+                }).then(function (result) {
+                    var select = document.querySelector('#movieSelect');
+                    select.innerHTML = result.Items.map(function(item) {
+                        return '<option value="' + item.Id + '">' + item.Name + '</option>';
+                    }).join('');
+                });
+            },
+
+            updateMovie: function(movieId) {
+                ApiClient.ajax({
+                    type: 'POST',
+                    url: 'MovieOfTheWeek/SetMovie',
+                    data: JSON.stringify(movieId),
+                    contentType: 'application/json'
+                }).then(function() {
+                    Dashboard.processServerConfigurationUpdateResult();
+                });
+            },
+
+            getCurrentMovie: function() {
+                return ApiClient.ajax({
+                    type: 'GET',
+                    url: 'MovieOfTheWeek/GetCurrentMovie'
+                });
+            }
+        };
+
+        document.querySelector('.movieOfTheWeekConfigForm').addEventListener('submit', MovieOfTheWeekConfig.saveConfiguration);
+        document.querySelector('.movieOfTheWeekConfigPage').addEventListener('pageshow', function() {
+            MovieOfTheWeekConfig.loadConfiguration();
+            MovieOfTheWeekConfig.populateMovies();
+        });
+    </script>
+</div> 
